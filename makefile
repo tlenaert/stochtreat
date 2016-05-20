@@ -1,0 +1,87 @@
+#written by Marvin Böttcher
+
+SHELL= /bin/bash
+CC:=g++ 
+
+
+
+#compilation target name
+TARGET := program
+
+#directories for source code and build-files
+BUILDDIR :=  build
+SRCDIR :=  src
+SRCEXT := cpp
+INCLUDEDIR := src
+
+
+#COMPILATION AND LIBARY FLAGS
+# LDLIBS = -L/usr/local/Cellar/gsl/1.16/lib -lgsl -lgslcblas #-lm -lboost_serialization
+LDLIBS = -L /usr/local/lib/ -lgsl #-lm -lboost_serialization
+
+# -lefence -lboost_random -lboost_thread-mt  -lboost_random  -stdlib=libc++
+
+WARNINGS := #-Wall -pedantic -Wextra -Wshadow  -Wcast-qual  -Weffc++ -Wfloat-equal -Wunreachable-code -Wconversion  -Wdisabled-optimization
+#--Wstrict-overflow=5 Wpointer-arith -Wunused
+
+CFLAGS := -std=c++11 -O3 $(WARNINGS) -I./$(INCLUDEDIR)/
+#CFLAGS: release mode: -O2 or -O3 debug mode: -g -ggdb  profile mode: -pg 
+
+
+#formatting of variables##################################################
+SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+DEPS = $(OBJECTS:%.o=%.d)
+
+# $(info make sources: $(SOURCES))
+# $(info make objects: $(OBJECTS))
+# echo $(SOURCES)
+
+#OBJSUT = $(patsubst ./build/main.o, ,$(OBJS)) $(addprefix $(BUILDDIR),$(OBJUnitTest))
+#DEPSUT = $(OBJSUNITTEST:%.o=%.d)
+
+#building all objects (main program) #########################################  
+all: $(TARGET)
+# rm tags
+# ctags -R .
+	
+#build the main target
+$(TARGET): $(OBJECTS)
+	$(CC)  $(CFLAGS)  -o $(TARGET) $(OBJECTS) $(LDLIBS)
+
+
+#all .o rules  ################################################### 
+./$(BUILDDIR)/%.o : ./$(SRCDIR)/%.$(SRCEXT)
+	$(CC) $(CFLAGS)  -c -o $@ $<
+
+
+
+#copy files to "/data/"
+copy: all
+
+
+#create dependencies ############################################
+dep: $(DEPS)
+
+-include $(DEPS) #include depencies (saved in .d files)
+
+#rule for creating the dependency files###############################################
+$(BUILDDIR)/%.d: $(SRCDIR)/%.$(SRCEXT)
+	$(CC) $(CFLAGS) -MM  -MT '$(subst .d,.o,$@)'  $< -MF $@ 
+
+
+
+#clean ##################################################################
+.PHONY : clean
+
+clean : 
+	rm -f $(TARGET) $(OBJECTS) $(DEPS) $(OBJSUT) $(OBJSPT)
+
+
+#run the compiled program#############################
+.PHONY: run
+
+run: all
+	./$(TARGET)
+
+
