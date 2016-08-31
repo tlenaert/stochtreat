@@ -41,7 +41,7 @@
 #include <string>
 #include <map>
 
-#include "getopts.h"
+#include "../include/getopts.h"
 
 /* Options::Options()
  *

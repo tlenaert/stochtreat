@@ -7,7 +7,7 @@
  *
  */
 
-#include "patientdata.h"
+#include "../include/patientdata.h"
 #include <iostream>
 #include <iomanip>
 #include <algorithm>

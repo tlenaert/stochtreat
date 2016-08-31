@@ -12,7 +12,7 @@ TARGET := stochtreat
 BUILDDIR :=  build
 SRCDIR :=  src
 SRCEXT := cpp
-INCLUDEDIR := src
+INCLUDEDIR := include
 
 
 #COMPILATION AND LIBARY FLAGS

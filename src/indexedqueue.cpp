@@ -7,7 +7,7 @@
  *
  */
 
-#include "indexedqueue.h"
+#include "../include/indexedqueue.h"
 #include <limits>
 
 QueueElement::QueueElement(const QueueElement& other){

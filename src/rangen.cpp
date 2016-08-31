@@ -1,5 +1,5 @@
 
-#include "rangen.h"
+#include "../include/rangen.h"
 #include <sys/time.h>
 #include <stdlib.h>
 #include <gsl/gsl_rng.h>

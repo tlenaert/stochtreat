@@ -5,12 +5,12 @@
 #include <sstream>
 #include <limits>
 #include <boost/lexical_cast.hpp>
-#include "getopts.h"
-#include "data.h"
-#include "rangen.h"
-#include "dependency.h"
-#include "PriorityQueue.h"
-#include "kernel.h"
+#include "../include/getopts.h"
+#include "../include/data.h"
+#include "../include/rangen.h"
+#include "../include/dependency.h"
+#include "../include/PriorityQueue.h"
+#include "../include/kernel.h"
 #include <algorithm>
 
 int main (int argc, char *argv[]) {

@@ -7,7 +7,7 @@
  *
  */
 
-#include "kernel.h"
+#include "../include/kernel.h"
 #include <algorithm>
 #include <limits>
 #include <iomanip>
