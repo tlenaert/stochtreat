@@ -40,7 +40,7 @@
 #define _GETOPTS_H_
 
 
-#include <string>
+#include <cstring>
 #include <map>
 
 class Options
