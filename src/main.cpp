@@ -15,7 +15,7 @@
 
 int main (int argc, char *argv[]) {
 
-    enum {RUNID, SIZE,TREATMENTTIME, MASS, REDUCTION, PATIENTS, PATH};
+    enum {RUNID, SIZE,TREATMENTTIME, MASS, REDUCTION, PATIENTS, PATH,NTIME};
     Options options;
 
     options.addOption("r", "run",	"Run identifier (default 1)",	true);
@@ -25,6 +25,7 @@ int main (int argc, char *argv[]) {
     options.addOption("e", "reduction", "Required reduction level (default 4.5 logs)", true);
     options.addOption("p", "patients", "Number of patients (default 2)", true);
     options.addOption("h", "path", "Output path (default ./) ", true);
+    options.addOption("n", "ntime", "Maximum simulation time", true);
 
 
     options.parse(argc, argv);
@@ -38,6 +39,7 @@ int main (int argc, char *argv[]) {
     double months(1);
     double factor(1.0);
     string path("./");
+    double ntime(-1.0);
 
     int opt;
     while ((opt = options.cycle()) >= 0) {
@@ -84,6 +86,12 @@ int main (int argc, char *argv[]) {
                     cout << "#Path is set to: " << path << endl;
                     break;
                 }
+            case NTIME:
+                {
+                    ntime = boost::lexical_cast<float>(options.getArgs(opt));
+                    cout << "#set maximum time to: " << ntime << endl;
+                    break;
+                }
             default:
                 break;
         }
@@ -97,6 +105,9 @@ int main (int argc, char *argv[]) {
     RanGen ran;
     Data data;
     data.calcFromMass(mass, Nbase, Bbase, Sbase, (Lbase * factor), months);
+    if (ntime > 0.){ //non-default
+        data.setNtimes(ntime);
+    }
     data.setPercBound(0.05);
     data.setStop(12);
     data.setReduction(reduction);

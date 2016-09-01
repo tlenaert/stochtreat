@@ -222,7 +222,7 @@ double Kernel::execute(RanGen& ran, double t, bool treat){
 		detUpdate();
 		
 		iters++;
-		_time += _time_step; //<-- shouldn't this add the time of the next reaction?  not _time_step
+		_time += _time_step; 
 	}
 	if(!treat) {
 		_pool.calcAlpha(); // required to recalculate disease burden
