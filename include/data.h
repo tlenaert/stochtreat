@@ -138,6 +138,8 @@ class Data {
 		string storage() const {return _hdlocation;}
 		void setStorage(string s) {_hdlocation=s;}
 		
+                /* calculating patient parameters from given numbers
+                 */
 		void calcFromMass(double,double,double, double, double, double);
 		friend ostream & operator<<(ostream &o, Data& c){return c.display(o);}
 		double mylog(double, double);				
