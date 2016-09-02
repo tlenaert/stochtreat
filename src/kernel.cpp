@@ -199,6 +199,7 @@ double Kernel::execute(RanGen& ran, double t, bool treat){
 //	cout << "##execute starts " << _time << endl;
 	int iters = (int)ceil(_time / _data.dt());
 	int endsim = _data.ntimes();
+        int yearscounter=0;
 	if(treat) {
 		endsim = iters + (int) (_data.treatment()*365.0/_data.dt());	
 //		cout << "treatment ends at " <<  treatmentend << " iterations ("<< (t + _data.treatment()) << " years)" << endl;
@@ -215,6 +216,11 @@ double Kernel::execute(RanGen& ran, double t, bool treat){
 
 		//start new update
 		_pool.memorize(); //every time we update the state is stored (calculations are performed on these states)
+                _pool.check_LSCvanished(_time);
+                // if (_time/365. >= yearscounter ){
+                //     _pool.print_cells(std::cout,_time);
+                //     ++yearscounter;
+                // }
 		while(_time >= next_stoch)	{
 			nextMethod(ran);
 			next_stoch = (_queue.top())->tau();
@@ -258,6 +264,11 @@ float Kernel::getReduction(){
 
 float Kernel::whenReduction(){
 	return _pool.when();
+}
+
+
+float Kernel::get_nolsctime(){
+	return _pool.get_nolsctime();
 }
 
 

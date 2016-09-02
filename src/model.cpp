@@ -49,7 +49,7 @@ double Model::mylog(double p1, double base){
 
 
 
-Model::Model(Data data, unsigned int ns):_numstoch(ns),_diagnosis(0){ //ns = 1 is alleen de stem cell Model
+Model::Model(Data data, unsigned int ns):_numstoch(ns),_diagnosis(0),_nolsctime(0.){ //ns = 1 is alleen de stem cell Model
 	assert(_numstoch > 0);
 	_numcomp = data.ncompartments()+1;
 	
@@ -546,6 +546,20 @@ double Model::diseaseBurden(){
 }
 
 
+void Model::print_cells(std::ostream & os,double _time){
+    os <<_time/365.0<<" ";
+    os <<getH(0)<<" ";
+    os <<getC(0)<<" ";
+    os <<getI(0)<<" ";
+    os <<std::endl;
+}
+
+void Model::check_LSCvanished(double t){
+    if (_nolsctime>0.)
+        return;
+    if (getC(0)==0)
+        _nolsctime=t/365.;
+}
 
 
 

@@ -28,6 +28,10 @@ public:
 	bool reachedReduction();
 	float getReduction();
 	float whenReduction();
+
+        /* get first timepoint without LSC in population.
+         */
+        float get_nolsctime();
 	bool hasLSC();
 	float burden();
 	void addStochCompSizes(double* data);

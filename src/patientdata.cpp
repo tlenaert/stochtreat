@@ -176,7 +176,7 @@ void PatientData::calculateStatistics(){
 
 PatientData::PatientData(string fname, int p):_patient(p),_lasttime(0), _lastmonth(0.0){
 	ifstream patientstream(fname.c_str(), ios::binary);
-	if((_patient >=0) && patientstream.is_open()){
+	if( patientstream.is_open()){
 		readBinaryFile(patientstream);
 		_estimate.clear();
 		_monthly.clear();

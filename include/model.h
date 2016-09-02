@@ -67,6 +67,14 @@ public:
 	void setDiagRes(double v) {_diagnosis = v;}
 	double when() const {return _when;}
 	void setWhenReduction(double v) {_when = v;}
+
+        /* set time when LSCvanished.
+         */
+        void setWhenLSCvanished(double t) {_nolsctime=t;}
+
+        /* check if LSC is in pool, otherwise save time.
+         */
+        void check_LSCvanished(double t);
 	
 	friend ostream & operator<<(ostream &o, Model& p){return p.display(o);}
 	Model& operator=(const Model&);
@@ -87,11 +95,20 @@ public:
 	bool containsLSC();
 	bool treatDeterministically(unsigned k, double amount);
 	bool treatStochastically(unsigned k, double rate, RanGen& ran);
+
+        /* set time when LSCvanished.
+         */
+        double get_nolsctime() {return _nolsctime;}
 	
 	void calcAlpha();
 	double getAlpha() const {return _alpha;}
 	
 	double diseaseBurden();
+
+        /* print cell numbers.
+         * <HSC> <LSC>
+         */
+        void print_cells(std::ostream &,double _time);
 	
 private:
 	double myround(double val);
@@ -108,6 +125,10 @@ private:
 	double _alpha;
 	double _diagnosis;
 	double _when;
+
+        /* time when the LSC vanished from the stem cell pool.
+         */
+        double _nolsctime;
 };
 
 #endif

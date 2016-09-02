@@ -15,7 +15,7 @@
 
 int main (int argc, char *argv[]) {
 
-    enum {RUNID, SIZE,TREATMENTTIME, MASS, REDUCTION, PATIENTS, PATH,NTIME};
+    enum {RUNID, SIZE,TREATMENTTIME, MASS, REDUCTION, PATIENTS, PATH,NTIME,OUTSPEC};
     Options options;
 
     options.addOption("r", "run",	"Run identifier (default 1)",	true);
@@ -26,6 +26,8 @@ int main (int argc, char *argv[]) {
     options.addOption("p", "patients", "Number of patients (default 2)", true);
     options.addOption("h", "path", "Output path (default ./) ", true);
     options.addOption("n", "ntime", "Maximum simulation time", true);
+    options.addOption("n", "ntime", "Maximum simulation time", true);
+    options.addOption("o", "output", "Specifiy kind of output", true);
 
 
     options.parse(argc, argv);
@@ -40,6 +42,7 @@ int main (int argc, char *argv[]) {
     double factor(1.0);
     string path("./");
     double ntime(-1.0);
+    int output_specifier(0);
 
     int opt;
     while ((opt = options.cycle()) >= 0) {
@@ -92,6 +95,12 @@ int main (int argc, char *argv[]) {
                     cout << "#set maximum time to: " << ntime << endl;
                     break;
                 }
+            case OUTSPEC:
+                {
+                    output_specifier = boost::lexical_cast<int>(options.getArgs(opt));
+                    cout << "#set output specifier to: " << output_specifier << endl;
+                    break;
+                }
             default:
                 break;
         }
@@ -120,7 +129,7 @@ int main (int argc, char *argv[]) {
     double diagnosis=0;
     double diagnosed=0;
     double reachedreduction = 0;
-    double timetoreduction = 0;
+    double total_timetoreduction = 0;
     double avgsize[size+1];
     for (int i=0; i< size+1; i++) {
         avgsize[i]=0.0;
@@ -131,7 +140,9 @@ int main (int argc, char *argv[]) {
     clock_t timer=clock();
     vector<unsigned> redresult;
     for(unsigned i=0 ; i < patients; ++i){
-        cout << "#patient " << i << endl;
+        if (output_specifier==0){
+            cout << "#patient " << i << endl;
+        }
         Kernel ker(ran, data, size);
         //	    ker.printAll(); cout << endl << endl;
         double time = ker.execute(ran,0.0,false);
@@ -150,40 +161,55 @@ int main (int argc, char *argv[]) {
 
             if(ker.reachedReduction()){
                 reachedreduction +=1;
-                timetoreduction +=(ker.whenReduction() - ker.getDiagnosis());
+                double timetoreduction=(ker.whenReduction() - ker.getDiagnosis());
+                total_timetoreduction +=timetoreduction;
                 redresult.push_back(ker.whenReduction() - ker.getDiagnosis());
-                cout << "#years to reduction " << timetoreduction << " (years) " << ker.whenReduction() << "\t" << ker.getDiagnosis() << endl;
-                //write compartment data to file
-                //				stringstream ss;
-                //				ss << path<< "patient-"<< runid << "-"<< i << ".txt";
-                //				ofstream output(ss.str().c_str());
-                //				if(!output.is_open()){
-                //					cout << " unable to open output file " << ss.str() << endl;
-                //					cout << " exiting program " << endl;
-                //					exit(-1);
-                //				}
-                //				ker.writeModel(output);
-                //				output.close();
+                if (output_specifier==0){
+                    cout << "#<years to diag.> <years to red.> <total> <nolsctime>"
+                    << ker.getDiagnosis() << "  " 
+                    << timetoreduction << "  "
+                    << ker.whenReduction() << " "
+                    << ker.get_nolsctime() << endl;
+                }
+
+                // //write compartment data to file
+                // stringstream ss;
+                // ss << path<< "patient-"<< runid << "-"<< i << ".txt";
+                // ofstream output(ss.str().c_str());
+                // if(!output.is_open()){
+                //     cout << " unable to open output file " << ss.str() << endl;
+                //     cout << " exiting program " << endl;
+                //     exit(-1);
+                // }
+                // ker.writeModel(output);
+                // output.close();
             }
             //			cout << "Reduction is " << ker.getReduction() << endl;
+        }
+
+        if (output_specifier==1){
+            cout  << ker.get_nolsctime() << endl;
         }
         ker.addStochCompSizes(avgsize);
     }
 
     cout << "#Real time elapsed in seconds: " << ((double)clock()-timer)/CLOCKS_PER_SEC << endl;
-    cout << "#Fraction diagnosed "<< endl << (diagnosed /(double) patients)*100 << endl;
-    cout << "#Average time to diagnosis " << endl << (diagnosed > 0?(diagnosis / (double) diagnosed):0) << endl;
-    cout << "#Fraction with no LSC" << endl << (nolsc / (double) patients) << endl;
-    cout << "#Fraction diagnosed with no LSC" << endl << (diagnosed > 0?(diagnosed_nolsc / (double) diagnosed):0) << endl;
-    cout << "#Fraction that reached "<< reduction << " log reduction : diagnosed patients : " << endl << (reachedreduction > 0?(reachedreduction / (double) diagnosed):0) << "\t " << reachedreduction << "\t " << diagnosed << "\t " << diagnosed_nolsc<< endl;
+    cout << "#Fraction diagnosed "<< (diagnosed /(double) patients)*100 << endl;
+    cout << "#Average time to diagnosis " << (diagnosed > 0?(diagnosis / (double) diagnosed):0) << endl;
+    cout << "#Fraction with no LSC" << (nolsc / (double) patients) << endl;
+    cout << "#Fraction diagnosed with no LSC" << (diagnosed > 0?(diagnosed_nolsc / (double) diagnosed):0) << endl;
+    cout << "#Fraction that reached "<< reduction 
+        << " log reduction : <reduction freq.> <#of reductions> <diagnosed> <noscl at dignose>" << endl <<"# "
+        << (reachedreduction > 0?(reachedreduction / (double) diagnosed):0)
+        << " " << reachedreduction << " " << diagnosed << " " << diagnosed_nolsc<< endl;
     double stddev = 0;
-    double avg = (reachedreduction > 0?(timetoreduction / (double) reachedreduction):0) ;
+    double avg = (reachedreduction > 0?(total_timetoreduction / (double) reachedreduction):0) ;
     for(int i=0; i < redresult.size(); i++){
         stddev += pow((double)(redresult[i] - avg), 2.0);
     }
     stddev = stddev / (double)redresult.size();
     stddev = sqrt(stddev);
-    cout << "#Average time to reduction "<< (reachedreduction > 0?(timetoreduction / (double) reachedreduction):0) << "\t" << stddev << endl;
+    cout << "#Average time to reduction "<< avg << "\t" << stddev << endl;
     for (int i=0; i< size+1; i++) {
         cout << "#avg size comp " << i << " = " << (avgsize[i]/(double)patients) << endl;
     }
