@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
@@ -23,7 +22,7 @@ for t in times:
     no_lscs=(data<t).sum()
     lsc_frac.append(no_lscs/no_patients)
 
-plt.plot(times,lsc_frac)
+for t,l in zip(times,lsc_frac):
+    print(t,l)
 
-plt.show()
 
