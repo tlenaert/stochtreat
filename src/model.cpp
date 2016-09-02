@@ -49,7 +49,7 @@ double Model::mylog(double p1, double base){
 
 
 
-Model::Model(Data data, unsigned int ns):_numstoch(ns),_diagnosis(0),_nolsctime(0.){ //ns = 1 is alleen de stem cell Model
+Model::Model(Data data, unsigned int ns):_numstoch(ns),_diagnosis(0),_nolsctime(-1.){ //ns = 1 is alleen de stem cell Model
 	assert(_numstoch > 0);
 	_numcomp = data.ncompartments()+1;
 	

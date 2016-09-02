@@ -11,26 +11,10 @@
 #include "../include/dependency.h"
 #include "../include/PriorityQueue.h"
 #include "../include/kernel.h"
+#include "../include/parameter_handler.h"
 #include <algorithm>
 
 int main (int argc, char *argv[]) {
-
-    enum {RUNID, SIZE,TREATMENTTIME, MASS, REDUCTION, PATIENTS, PATH,NTIME,OUTSPEC};
-    Options options;
-
-    options.addOption("r", "run",	"Run identifier (default 1)",	true);
-    options.addOption("s", "size",	"Number of stochastic compartments (default 7)",	true);
-    options.addOption("t", "treattime", "Years of treatment (default 10 year)", true);
-    options.addOption("m", "mass",	"animal mass (default 70 kg)",	true);
-    options.addOption("e", "reduction", "Required reduction level (default 4.5 logs)", true);
-    options.addOption("p", "patients", "Number of patients (default 2)", true);
-    options.addOption("h", "path", "Output path (default ./) ", true);
-    options.addOption("n", "ntime", "Maximum simulation time", true);
-    options.addOption("n", "ntime", "Maximum simulation time", true);
-    options.addOption("o", "output", "Specifiy kind of output", true);
-
-
-    options.parse(argc, argv);
 
     int runid(1);
     int size(7); // 1 means only the stem cell compartment
@@ -44,67 +28,20 @@ int main (int argc, char *argv[]) {
     double ntime(-1.0);
     int output_specifier(0);
 
-    int opt;
-    while ((opt = options.cycle()) >= 0) {
-        switch(opt) {
-            case RUNID:
-                {
-                    runid = boost::lexical_cast<int>(options.getArgs(opt));
-                    cout << "#Run identifier is: " << runid << endl;
-                    break;
-                }
-            case SIZE:
-                {
-                    size = boost::lexical_cast<int>(options.getArgs(opt));
-                    cout << "#Number of stochastic compartments is: " << size << endl;
-                    break;
-                }
-            case TREATMENTTIME:
-                {
-                    treatmenttime = boost::lexical_cast<float>(options.getArgs(opt));
-                    cout << "#Treatmenttime set to: " << treatmenttime << endl;
-                    break;
-                }
-            case MASS:
-                {
-                    mass = boost::lexical_cast<float>(options.getArgs(opt));
-                    cout << "#Animal mass is set to: " << mass << endl;
-                    break;
-                }
-            case REDUCTION:
-                {
-                    reduction = boost::lexical_cast<float>(options.getArgs(opt));
-                    cout << "#Requested log reduction is: " << reduction << endl;
-                    break;
-                }
-            case PATIENTS:
-                {
-                    patients = boost::lexical_cast<unsigned>(options.getArgs(opt));
-                    cout << "#Number of patients is: " << patients << endl;
-                    break;
-                }
-            case PATH:
-                {
-                    path = options.getArgs(opt);
-                    cout << "#Path is set to: " << path << endl;
-                    break;
-                }
-            case NTIME:
-                {
-                    ntime = boost::lexical_cast<float>(options.getArgs(opt));
-                    cout << "#set maximum time to: " << ntime << endl;
-                    break;
-                }
-            case OUTSPEC:
-                {
-                    output_specifier = boost::lexical_cast<int>(options.getArgs(opt));
-                    cout << "#set output specifier to: " << output_specifier << endl;
-                    break;
-                }
-            default:
-                break;
-        }
-    }
+    ParameterHandler parameters(argc,argv);
+
+
+    parameters.SetValue("run",	"Run identifier (default 1)",	runid);
+    parameters.SetValue("size",	"Number of stochastic compartments (default 7)",	size);
+    parameters.SetValue("treattime", "Years of treatment (default 10 year)", treatmenttime);
+    parameters.SetValue("mass",	"animal mass (default 70 kg)",	mass);
+    parameters.SetValue("reduction", "Required reduction level (default 4.5 logs)", reduction);
+    parameters.SetValue("patients", "Number of patients (default 2)", patients);
+    parameters.SetValue("path", "Output path (default ./) ", path);
+    parameters.SetValue("ntime", "Maximum simulation time", ntime);
+    parameters.SetValue("output", "Specifiy kind of output", output_specifier);
+
+
 
     double Nbase(16.52861491);
     double Bbase(2.892507609);
