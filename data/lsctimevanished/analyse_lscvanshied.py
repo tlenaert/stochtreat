@@ -11,7 +11,6 @@ rawdata=[np.loadtxt(filename,comments="#") for filename in filenames]
 
 data=np.concatenate(rawdata)
 data[data<0.]=np.inf
-print(data)
 
 times=np.linspace(0.,t_max,t_steps)
 
