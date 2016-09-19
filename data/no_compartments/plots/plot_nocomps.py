@@ -27,7 +27,7 @@ ax[0].violinplot(data, range(1,len(data)+1), points=100, widths=0.7,
 # ax[0].set_xlabel("# of stochastic compartments")
 
 ax[1].errorbar(range(1,len(means)+1),means,yerr=stddev,marker="o",linestyle="None")
-ax[1].set_ylim(ymin=0)
+# ax[1].set_ylim(ymin=0)
 # ax[1].plot(range(1,len(stddev)+1),stddev,marker="o",linestyle="None")
 
 
