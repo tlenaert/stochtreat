@@ -14,7 +14,7 @@ import time
 compartments=7
 if len(sys.argv) > 1:
     compartments=sys.argv[1]
-folder_name_prefix="nocompartments"+str(compartments)
+folder_name_prefix="nocompartments_new"+str(compartments)
 no_starts=100
 no_patients=1000
 output=2

@@ -15,7 +15,7 @@ import time
 folder_name_prefix="treattest"
 no_patients=100000
 treattest=1
-treattime_range=np.linspace(0.,5.,100)
+treattime_range=np.linspace(0.,10.,100)
 output=0
 
 run_script_name="run.sh"
