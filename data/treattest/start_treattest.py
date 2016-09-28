@@ -13,7 +13,7 @@ import time
 
 
 folder_name_prefix="treattest"
-no_patients=100000
+no_patients=1000
 treattest=1
 treattime_range=np.linspace(0.,1.,50)
 output=0
