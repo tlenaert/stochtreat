@@ -23,7 +23,8 @@ treattime_range=np.linspace(0.,1.,50.)
 
 rawdata=[np.loadtxt(filename,comments="#") for filename in filenames]
 
-data=np.concatenate(rawdata)
+data=np.array(rawdata)
+
 probs=data[:,0]
 # print(probs)
 # exit(0)
