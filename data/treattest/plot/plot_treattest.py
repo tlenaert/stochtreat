@@ -19,13 +19,13 @@ my_colors = itertools.cycle([cmap(int(i)) for i in indices])
 labels=itertools.cycle(['old treatment','new treatment','new treatment2'])
 
 offset=0.
-width=0.010
+width=1.
 lengthening=1. #25.
 for filename in filenames:
     data=np.loadtxt(filename)
     color=next(my_colors)
     label=next(labels)
-    ax.plot(data[:,0]*32.,data[:,1],alpha=0.7,color=color,label=label )#,marker="o",markersize=2.0,linestyle="None")
+    ax.plot(data[:,0]*lengthening,data[:,1],alpha=0.7,color=color,label=label )#,marker="o",markersize=2.0,linestyle="None")
     # ax.bar((data[:,0]+offset)*lengthening,data[:,1],width*lengthening,alpha=0.7,color=color,edgecolor="none",linewidth=0.,label=label )#,marker="o",markersize=2.0,linestyle="None")
     offset+=width+0.001
 
