@@ -19,7 +19,7 @@ import helperfunctions
 import sys
 
 filenames = helperfunctions.natural_sort(sys.argv[1:])
-treattime_range=np.linspace(0.,5.,100.)
+treattime_range=np.linspace(0.,10.,100.)
 
 rawdata=[np.loadtxt(filename,comments="#") for filename in filenames]
 
