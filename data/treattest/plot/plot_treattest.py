@@ -16,7 +16,7 @@ filenames=sys.argv[1:]
 cmap = plt.get_cmap('viridis')
 indices = np.linspace(0, cmap.N, len(filenames))
 my_colors = itertools.cycle([cmap(int(i)) for i in indices])
-labels=itertools.cycle(['old treatment','new treatment','new treatment2'])
+labels=itertools.cycle(['All patients'])
 
 offset=0.
 width=1.
