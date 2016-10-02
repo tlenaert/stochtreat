@@ -12,8 +12,8 @@ import numpy as np
 import time
 
 
-folder_name_prefix="treattest_short"
-no_patients=1000
+folder_name_prefix="treattest_both_long"
+no_patients=100000
 treattest=1
 treattime_range=np.linspace(0.,10.,100)
 output=-1

@@ -25,12 +25,15 @@ rawdata=[np.loadtxt(filename,comments="#") for filename in filenames]
 
 data=np.array(rawdata)
 
-probs=data[:,0]
+probs=data[:,[0,3]]
 # print(probs)
 # exit(0)
 
 
 for t,p in zip(treattime_range,probs):
-    print(t,p)
+    print(t,end=" ")
+    for x in p:
+        print(x, end=" ")
+    print()
 
 
