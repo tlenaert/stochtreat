@@ -14,9 +14,9 @@ import time
 compartments=7
 if len(sys.argv) > 1:
     compartments=sys.argv[1]
-folder_name_prefix="nocompartments"+str(compartments)
+folder_name_prefix="nocompartments_new"+str(compartments)
 no_starts=100
-no_patients=1000
+no_patients=10000
 output=2
 
 run_script_name="run.sh"
@@ -68,7 +68,7 @@ with cd(folder):
     for id in range(no_starts):
         parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",compartments="+str(compartments)
         jobname= parameters
-        walltime_parameter="00:30:00"#"walltime="+
+        walltime_parameter="02:30:00"#"walltime="+
         # with cd(dirname):
         print( "submitting script with",parameters)
         process=subprocess.Popen(["sbatch","--export="+parameters,"--job-name="+jobname,"-t",walltime_parameter,"-o",logfilefoldername+jobname+".out",run_script_name])

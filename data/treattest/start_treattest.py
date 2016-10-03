@@ -12,10 +12,10 @@ import numpy as np
 import time
 
 
-folder_name_prefix="treattest"
-no_patients=1000
+folder_name_prefix="treattest_both_longterm"
+no_patients=100000
 treattest=1
-treattime_range=np.linspace(0.,5.,100)
+treattime_range=np.linspace(10.,20.,100)
 output=-1
 
 run_script_name="run.sh"
@@ -67,7 +67,7 @@ with cd(folder):
     for id,treattime in enumerate(treattime_range):
         parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)
         jobname= parameters
-        walltime_parameter="10:30:00"#"walltime="+
+        walltime_parameter="30:30:00"#"walltime="+
         # with cd(dirname):
         print( "submitting script with",parameters)
         process=subprocess.Popen(["sbatch","--export="+parameters,"--job-name="+jobname,"-t",walltime_parameter,"-o",logfilefoldername+jobname+".out",run_script_name])
