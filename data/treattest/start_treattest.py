@@ -12,10 +12,10 @@ import numpy as np
 import time
 
 
-folder_name_prefix="treattest_both_long"
+folder_name_prefix="treattest_both_longterm"
 no_patients=100000
 treattest=1
-treattime_range=np.linspace(0.,10.,100)
+treattime_range=np.linspace(10.,20.,100)
 output=-1
 
 run_script_name="run.sh"
