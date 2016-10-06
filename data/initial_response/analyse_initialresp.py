@@ -29,8 +29,8 @@ rawdata=[np.loadtxt(filename,comments="#") for filename in filenames]
 data=np.concatenate(rawdata)
 
 # print(np.where(data[:,1]==1))
-relapse=data[np.where(data[:,1]==1)]
-norelapse=data[np.where(data[:,1]==0)]
+relapse=data[np.where(data[:,-1]==1)]
+norelapse=data[np.where(data[:,-1]==0)]
 
 np.savetxt("results/relapsedat"+str(treattime)+".txt",relapse)
 np.savetxt("results/norelapsedat"+str(treattime)+".txt",norelapse)

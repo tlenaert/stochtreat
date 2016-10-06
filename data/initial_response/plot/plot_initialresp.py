@@ -13,8 +13,13 @@ fig,ax=plt.subplots(1,1)
 fig.subplots_adjust(left=0.19,bottom=0.20,right=0.96,top=0.96)
 ax.margins(0.05)
 
-filenamer=sys.argv[1]
-filenamen=sys.argv[2]
+if len(sys.argv[:])==2:
+    treattimenumber=sys.argv[1]
+    filenamer="results/relapsedat"+str(treattimenumber)+".txt"
+    filenamen="results/norelapsedat"+str(treattimenumber)+".txt"
+else:
+    filenamer=sys.argv[1]
+    filenamen=sys.argv[2]
 relapse=np.loadtxt(filenamer)
 norelapse=np.loadtxt(filenamen)
 
