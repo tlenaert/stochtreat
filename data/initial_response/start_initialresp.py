@@ -12,7 +12,9 @@ import numpy as np
 import time
 
 
-treattime=1
+treattime=2
+if len(sys.argv[:]) > 1 :
+    treattime=sys.argv[1]
 folder_name_prefix="initialresp_"+str(treattime)
 no_patients=1000
 no_runs=100
