@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats 
 import pandas as pd
 from matplotlib.ticker import MaxNLocator 
 
@@ -20,11 +21,13 @@ if len(sys.argv[:])==2:
 else:
     filenamer=sys.argv[1]
     filenamen=sys.argv[2]
-relapse=np.loadtxt(filenamer)
-norelapse=np.loadtxt(filenamen)
+relapse=np.loadtxt(filenamer)[:,0]
+norelapse=np.loadtxt(filenamen)[:,0]
 
-ax.hist(relapse[:,0],bins=50,normed=True,alpha=0.8,label="relapse")
-ax.hist(norelapse[:,0],bins=50,normed=True,alpha=0.8,label="no relapse")
+print(scipy.stats.mannwhitneyu(relapse, norelapse))
+print(scipy.stats.ks_2samp(relapse, norelapse))
+ax.hist(relapse,bins=50,normed=True,alpha=0.8,label="relapse")
+ax.hist(norelapse,bins=50,normed=True,alpha=0.8,label="no relapse")
 
 ax.xaxis.set_major_locator(MaxNLocator(6))
 ax.set_xlabel("initial response slope")
