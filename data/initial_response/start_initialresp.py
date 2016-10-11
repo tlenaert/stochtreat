@@ -19,7 +19,7 @@ folder_name_prefix="initialresp_"+str(treattime)
 no_patients=1000
 no_runs=100
 treattest=1
-output=4
+output="nolsctime.diagtime.initresponse.fullburden.nooverview"
 
 run_script_name="run.sh"
 
