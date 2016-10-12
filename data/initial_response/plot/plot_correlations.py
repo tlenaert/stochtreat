@@ -9,23 +9,23 @@ import plothelpers
 import helperfunctions
 import sys
 
-filename=sys.argv[1]
-data = pd.read_csv(filename, delim_whitespace=True, header = 0,index_col=False)
+# filename=sys.argv[1]
+filenames=sys.argv[1:]
+data = pd.concat([pd.read_csv(filename, delim_whitespace=True, header = 0,index_col=False) for filename in filenames],axis=0)
 
 cols=data.columns.tolist()
-# print(cols)
-# cols= ["$t_{nolsc}$", "$t_{diag}$","$t_{red}$","init resp","lsc at diag", "1y burden"]
-# data.columns = cols
-
-cols.insert(0, cols.pop(cols.index('init_resp')))
+cols=helperfunctions.natural_sort(cols)
+cols.insert(0, cols.pop(cols.index('init.response')))
 print(cols)
-# cols[3], cols[0] = cols[0], cols[3]
+
 data=data.ix[:,cols]
+cols=[col.replace("_","\_") for col in cols]
+data.columns=cols
 
 correl=data.corr().dropna(axis=(0,1),how='all') 
 print(correl.columns)
 
-plothelpers.latexify(fig_height=2.5)
+plothelpers.latexify(columns=2,fig_height=4.5)
 fig,ax=plt.subplots(1,1)
 fig.subplots_adjust(left=0.20,bottom=0.03,right=0.88,top=0.72)
 ax.margins(0.05)
