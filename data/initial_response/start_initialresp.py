@@ -15,7 +15,7 @@ import time
 treattime=2
 if len(sys.argv[:]) > 1 :
     treattime=sys.argv[1]
-folder_name_prefix="initialresp_"+str(treattime)
+folder_name_prefix="initialresp"+str(treattime)
 no_patients=1000
 no_runs=100
 treattest=1

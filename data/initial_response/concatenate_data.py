@@ -18,13 +18,30 @@
 #arguments: filenames to concatenate data from. Excluding everything starting with '#'
 import numpy as np
 import sys
+import re
 
+fancy=True
 filenames = sys.argv[1:]
 
 rawdata=[np.loadtxt(filename,comments="#") for filename in filenames]
 
 data=np.concatenate(rawdata)
 
+if fancy:
+    with open(filenames[0], 'r') as f:
+        first_line = f.readline()
+        second_line = f.readline()
+    
+    numbers=re.findall('\d+', filenames[0])
+    names=[]
+    for name in second_line.split('<')[1:]:
+        name=name.split('>')[0]
+        if name=="burden" or name=="relapse":
+            name=name+str(numbers[0])
+        name=name.replace(" ","")
+        names.append(name)
+        print(name,end=" ")
+    print()
 
 for x in data:
     for y in x:
