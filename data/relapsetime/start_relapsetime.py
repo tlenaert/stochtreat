@@ -19,7 +19,7 @@ folder_name_prefix="relapsetime"+str(treattime)
 no_patients=1000
 no_runs=100
 treattest=1
-output="nolsctime.diagtime.initresponse.nooverview.relapsetime"
+output="nolsctime.diagtime.initresponse.relapsetime"
 
 run_script_name="run.sh"
 
