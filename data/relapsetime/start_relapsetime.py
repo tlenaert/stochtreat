@@ -12,14 +12,14 @@ import numpy as np
 import time
 
 
-treattime=2
+treattime=1
 if len(sys.argv[:]) > 1 :
     treattime=sys.argv[1]
-folder_name_prefix="initialresp"+str(treattime)
+folder_name_prefix="relapsetime"+str(treattime)
 no_patients=1000
 no_runs=100
 treattest=1
-output="nolsctime.diagtime.initresponse.nooverview.yearlyburden"
+output="nolsctime.diagtime.initresponse.nooverview.relapsetime"
 
 run_script_name="run.sh"
 
