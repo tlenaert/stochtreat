@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import plothelpers
+import scipy.stats
 import helperfunctions
 import sys
 
@@ -12,9 +13,13 @@ ax.margins(0.05)
 
 filename=sys.argv[1]
 data=np.loadtxt(filename,comments="#")
+
+slope, intercept,bla,blub,bla=scipy.stats.linregress(data[:62,0],data[:62,1])
+yfit=intercept+slope*data[:62,0]
 # ax.plot(data[:,0],data[:,1],marker="o",markeredgewidth=0.1,
         # markeredgecolor="blue",markersize=1.0,linestyle="None")
 ax.plot(data[:,0],data[:,1])
+ax.plot(data[:62,0],yfit)
 
 # ax.set_yscale('log')
 ax.set_xlim(xmax=1800, xmin=1600)
