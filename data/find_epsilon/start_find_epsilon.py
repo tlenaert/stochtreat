@@ -11,7 +11,7 @@ from math import sqrt,pow
 import numpy as np
 import time
 
-epsilonvalues=10
+epsilonvalues=20
 if len(sys.argv[:]) > 1 :
     epislonstep=sys.argv[1]
 epsilon_min=0.5
@@ -71,6 +71,8 @@ with cd(folder):
 
     for epsilon_c in range(epsilon_c_range):
         for epsilon_i in range(epsilon_i_range):
+            if epsilon_i<epsilon_c:
+                continue
             parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i)
             jobname= parameters
             walltime_parameter="10:30:00"#"walltime="+
