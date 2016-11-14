@@ -14,12 +14,13 @@ to_find_data=[
 [0.502049958281,0.204397630799,0.108763321483]]  #euro HIGH 
 array_to_find=np.array(to_find_data[int(sys.argv[1])])
 
-delta=5e-1
+delta_start=5e-1
+delta_step=1e-5
 
 ##get tested epsilon values
 epsilon_min=0.5
 epsilon_max=1.0
-epsilonvalues=20
+epsilonvalues=30
 epsilon_i_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
 epsilon_c_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
 eps_list=[]
@@ -46,13 +47,13 @@ def find_closest_values(data,array_to_find,delta):
     return(resultindices)
 
 number=np.inf
-d=delta
+d=delta_start
 inx=[]
 while (number > 1):
     oldinx=inx
     inx=find_closest_values(data,array_to_find,d)
     number=len(inx)
-    d=d-1e-5
+    d=d-delta_step
     if (number<1):
         inx=oldinx
 resultindices=inx
