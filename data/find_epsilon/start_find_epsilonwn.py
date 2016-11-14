@@ -11,18 +11,19 @@ from math import sqrt,pow
 import numpy as np
 import time
 
-epsilonvalues=50
+epsilonvalues=15
 if len(sys.argv[:]) > 1 :
     epislonstep=sys.argv[1]
 epsilon_min=0.5
 epsilon_max=1.0
-folder_name_prefix="find_epsilon"
-no_patients=2000
+folder_name_prefix="find_epsilonwn"
+no_patients=10000
 treattest=0
 treattime=3
 output="3timepointaverage"
 epsilon_i_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
 epsilon_c_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
+epsilon_h_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
 
 run_script_name="run.sh"
 
@@ -72,20 +73,21 @@ with cd(folder):
 
     for epsilon_c in epsilon_c_range:
         for epsilon_i in epsilon_i_range:
-            if epsilon_i<epsilon_c:
-                continue
-            parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i)
-            id=id+1
-            jobname= parameters
-            walltime_parameter="10:30:00"#"walltime="+
-            # with cd(dirname):
-            print( "submitting script with",parameters)
-            process=subprocess.Popen(["sbatch","--export="+parameters,"--job-name="+jobname,"-t",walltime_parameter,"-o",logfilefoldername+jobname+".out",run_script_name])
-            time.sleep(0.05)
-            with open("parameter_values.txt","a") as pfile:
-                pfile.write(parameters+"\n")
-                # status = process.wait()
-                #~ print (status)
+            for epsilon_h in epsilon_h_range:
+                if epsilon_i<epsilon_c or epsilon_h<epsilon_c:
+                    continue
+                parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i)+",epsh="+str(epsilon_h)
+                id=id+1
+                jobname= parameters
+                walltime_parameter="10:30:00"#"walltime="+
+                # with cd(dirname):
+                print( "submitting script with",parameters)
+                process=subprocess.Popen(["sbatch","--export="+parameters,"--job-name="+jobname,"-t",walltime_parameter,"-o",logfilefoldername+jobname+".out",run_script_name])
+                time.sleep(0.05)
+                with open("parameter_values.txt","a") as pfile:
+                    pfile.write(parameters+"\n")
+                    # status = process.wait()
+                    #~ print (status)
 
 
 print("submission successfull, data target folder: ", folder)
