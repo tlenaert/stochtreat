@@ -23,7 +23,7 @@ treattime=3
 output="3timepointaverage"
 epsilon_i_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
 epsilon_c_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
-epsilon_h_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
+epsilon_n_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
 
 run_script_name="run.sh"
 
@@ -73,10 +73,10 @@ with cd(folder):
 
     for epsilon_c in epsilon_c_range:
         for epsilon_i in epsilon_i_range:
-            for epsilon_h in epsilon_h_range:
-                if epsilon_i<epsilon_c or epsilon_h<epsilon_c:
+            for epsilon_n in epsilon_n_range:
+                if epsilon_i<epsilon_c or epsilon_n<epsilon_c:
                     continue
-                parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i)+",epsh="+str(epsilon_h)
+                parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i)+",epsn="+str(epsilon_n)
                 id=id+1
                 jobname= parameters
                 walltime_parameter="10:30:00"#"walltime="+
