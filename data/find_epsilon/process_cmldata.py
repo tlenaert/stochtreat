@@ -13,7 +13,7 @@ timepointnames=["M3","M6","M12"]
 for timepoint in timepointnames:
     data[timepoint]=data[timepoint+"_IS"]/data["BL_IS"]
 
-print(data[timepoint],data[timepoint+"_IS"],data["BL_IS"])
+# print(data[timepoint],data[timepoint+"_IS"],data["BL_IS"])
 
 
 # print(data)
