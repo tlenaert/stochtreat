@@ -11,7 +11,7 @@ from math import sqrt,pow
 import numpy as np
 import time
 
-epsilonvalues=20
+epsilonvalues=30
 if len(sys.argv[:]) > 1 :
     epislonstep=sys.argv[1]
 epsilon_min=0.5
