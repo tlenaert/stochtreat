@@ -12,9 +12,9 @@ import numpy as np
 import time
 
 folder_name_prefix="find_epsilon"
-no_patients=4000
+no_patients=5000
 treattest=0
-treattime=3
+treattime=2
 output="3timepointaverage"
 
 epsilonvalues=60
@@ -23,8 +23,8 @@ if len(sys.argv[:]) > 1 :
 epsilon_min=0.5
 epsilon_max=1.0
 epsilon_n=0.85
-epsilon_i_range=np.linspace(0.80,epsilon_max,epsilonvalues)
-epsilon_c_range=np.linspace(0.5,0.80,epsilonvalues)
+epsilon_i_range=np.linspace(0.75,epsilon_max,epsilonvalues)
+epsilon_c_range=np.linspace(0.55,0.85,epsilonvalues)
 
 run_script_name="run.sh"
 
@@ -52,6 +52,7 @@ def copy_tools(dest):
     scriptname=__file__
     shutil.copy2(scriptname,dest)
     shutil.copy2("./stochtreat",dest)
+    shutil.copy2("./analyze_find_epsilon.py",dest)
     shutil.copy2(run_script_name,dest)
 
 
@@ -76,7 +77,7 @@ with cd(folder):
         for epsilon_i in epsilon_i_range:
             if epsilon_i<epsilon_c:
                 continue
-            parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i),+",epsn="+str(epsilon_n)
+            parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i)+",epsn="+str(epsilon_n)
             id=id+1
             jobname= parameters
             walltime_parameter="10:30:00"#"walltime="+
