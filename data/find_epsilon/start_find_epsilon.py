@@ -11,18 +11,20 @@ from math import sqrt,pow
 import numpy as np
 import time
 
-epsilonvalues=50
+folder_name_prefix="find_epsilon"
+no_patients=4000
+treattest=0
+treattime=3
+output="3timepointaverage"
+
+epsilonvalues=60
 if len(sys.argv[:]) > 1 :
     epislonstep=sys.argv[1]
 epsilon_min=0.5
 epsilon_max=1.0
-folder_name_prefix="find_epsilon"
-no_patients=2000
-treattest=0
-treattime=3
-output="3timepointaverage"
-epsilon_i_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
-epsilon_c_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
+epsilon_n=0.85
+epsilon_i_range=np.linspace(0.80,epsilon_max,epsilonvalues)
+epsilon_c_range=np.linspace(0.5,0.80,epsilonvalues)
 
 run_script_name="run.sh"
 
@@ -74,7 +76,7 @@ with cd(folder):
         for epsilon_i in epsilon_i_range:
             if epsilon_i<epsilon_c:
                 continue
-            parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i)
+            parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i),+",epsn="+str(epsilon_n)
             id=id+1
             jobname= parameters
             walltime_parameter="10:30:00"#"walltime="+

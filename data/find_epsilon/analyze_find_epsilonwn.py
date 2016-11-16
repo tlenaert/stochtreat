@@ -6,16 +6,13 @@ import sys
 
 # array_to_find=np.array([0.00266636,0.00119456,0.000851222])
 to_find_data=[
-    [0.11994494812140269, 0.031847672264213756, 0.025543728434327066] , #sokal LOW
-    [0.064294621947554351, 0.041933604102809392, 0.032632945359571189] , #sokal INT
-    [0.12944505110038521, 0.16560671082658152, 0.0825145962552611] , #sokal HIGH
-    [0.11902869904379794, 0.031901634379805963, 0.03729351383155937] , #euro LOW
-    [0.088553538937121576, 0.083289731014841065, 0.03001561769103259] , #euro INT
-    [0.11597804280543321, 0.11706848735364135, 0.12163073243492417]  #euro HIGH
-]
-to_find_names=["sokalLOW","sokalINT","sokalHIGH","euroLOW","euroINT","euroHIGH"]
+[0.119944948121,0.0318476722642,0.0255437284343],#sokal LOW 
+[0.0788205700963,0.0373155705618,0.029792798773],#sokal INT 4
+[0.248709037978,0.171248812015,0.0696353922543],#sokal HIGH
+[0.119117897496,0.0311775891388,0.0391527108148], #euro LOW 0
+[0.0933576305015,0.0753268313524,0.0255725420811],#euro INT 0
+[0.502049958281,0.204397630799,0.108763321483]]  #euro HIGH 
 array_to_find=np.array(to_find_data[int(sys.argv[1])])
-name_to_find=to_find_names[int(sys.argv[1])]
 
 delta_start=5e-1
 delta_step=1e-5
@@ -23,15 +20,17 @@ delta_step=1e-5
 ##get tested epsilon values
 epsilon_min=0.5
 epsilon_max=1.0
-epsilonvalues=50
+epsilonvalues=30
 epsilon_i_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
 epsilon_c_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
+epsilon_n_range=np.linspace(epsilon_min,epsilon_max,epsilonvalues)
 eps_list=[]
 for epsilon_c in epsilon_c_range:
     for epsilon_i in epsilon_i_range:
-        if epsilon_i<epsilon_c:
-            continue
-        eps_list.append([epsilon_c,epsilon_i])
+        for epsilon_n in epsilon_n_range:
+            if epsilon_i<epsilon_c or epsilon_n<epsilon_c:
+                continue
+            eps_list.append([epsilon_c,epsilon_i,epsilon_n])
 eps_list=np.array(eps_list)
 
 #process file data
@@ -64,7 +63,7 @@ resultindices=inx
 result_eps=eps_list[resultindices]
 resultdata=data[resultindices]
 
-print("#finding",name_to_find,array_to_find,"precision="+str(d))
+print("#finding ",array_to_find,"precision="+str(d))
 for epslist,indice in zip(result_eps,resultindices):
     for x in epslist:
         print(x,end=" ")
