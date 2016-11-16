@@ -11,7 +11,7 @@ from math import sqrt,pow
 import numpy as np
 import time
 
-epsilonvalues=15
+epsilonvalues=20
 if len(sys.argv[:]) > 1 :
     epislonstep=sys.argv[1]
 epsilon_min=0.5
@@ -79,7 +79,7 @@ with cd(folder):
                 parameters= "id="+str(id)+",patients="+str(no_patients)+",output="+str(output)+",treattest="+str(treattest)+",treattime="+str(treattime)+",epsc="+str(epsilon_c)+",epsb="+str(epsilon_i)+",epsn="+str(epsilon_n)
                 id=id+1
                 jobname= parameters
-                walltime_parameter="10:30:00"#"walltime="+
+                walltime_parameter="20:00:00"#"walltime="+
                 # with cd(dirname):
                 print( "submitting script with",parameters)
                 process=subprocess.Popen(["sbatch","--export="+parameters,"--job-name="+jobname,"-t",walltime_parameter,"-o",logfilefoldername+jobname+".out",run_script_name])
