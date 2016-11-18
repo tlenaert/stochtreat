@@ -23,8 +23,8 @@ if len(sys.argv[:]) > 1 :
 epsilon_min=0.5
 epsilon_max=1.0
 epsilon_n=0.85
-epsilon_i_range=np.linspace(0.75,epsilon_max,epsilonvalues)
-epsilon_c_range=np.linspace(0.55,0.85,epsilonvalues)
+epsilon_i_range=np.linspace(0.80,epsilon_max,epsilonvalues)
+epsilon_c_range=np.linspace(0.55,0.80,epsilonvalues)
 
 run_script_name="run.sh"
 
