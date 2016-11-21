@@ -40,11 +40,10 @@ for filename,eps in zip(filenames,eps_list_raw):
 
 
 for i,d,s,e in zip(range(len(rawdata)),rawdata,rawstd,eps_list):
-    if math.isclose(e[1],epsilon_i_range[32],abs_tol=1e-5):
-        for eps in e:
-            print(eps,end=" ")
-        for med in d[0]:
-            print(med,end=" ")
-        for std in s[0]:
-            print(std,end=" ")
-        print()
+    for eps in e:
+        print(eps,end=" ")
+    for med in d[0]:
+        print(med,end=" ")
+    for std in s[0]:
+        print(std,end=" ")
+    print()
