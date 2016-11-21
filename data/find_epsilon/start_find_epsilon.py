@@ -15,7 +15,7 @@ folder_name_prefix="find_epsilon"
 no_patients=5000
 treattest=0
 treattime=2
-output="3timepointaverage"
+output="3timepointsmedian"
 
 epsilonvalues=60
 if len(sys.argv[:]) > 1 :
