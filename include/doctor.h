@@ -47,6 +47,10 @@ class Doctor{
         /** Caculates and returns the tumor burden at a specific already recorded timepoint (defaults to the last).*/
         double get_tumor_burden(double t=-1.) const;
 
+        /** Returns the full tumor burden at specified
+         * interval times.*/
+        std::vector<double> get_burden_at_interval(double intdays) const;
+
         /** Takes a bloodsample every _sampling_timestep timesteps .*/
         void consult(double t, const Model & patient);
 
@@ -63,7 +67,7 @@ class Doctor{
         double get_resistant_share(double t=-1.) const;
 
         /** Calculates the log reduction of tumor burden. */
-        double get_logburden(double t=-1.) const;
+        double get_logreduction(double t=-1.) const;
 
         /** Returns true if required reduction level is reached.*/
         bool reduction_reached(double l=-1.,double t=-1.) const;
@@ -99,6 +103,8 @@ class Doctor{
 
         bool _first_time_consulted;
 
+        /** returns index corresponding to 
+         * timepoint t. TODO handling of missing values. */
         int find_timepoint(double t) const;
 
         double slope(const std::vector<recorddata>::const_iterator x_begin,const std::vector<recorddata>::const_iterator y_begin,unsigned int elements) const;

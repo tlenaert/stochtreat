@@ -8,9 +8,6 @@
  */
 
 #include "kernel.h"
-#include <algorithm>
-#include <limits>
-#include <iomanip>
 
 
 
@@ -26,7 +23,7 @@ void Kernel::printAll(){
     std::cout << std::endl << _depend << std::endl;
 }
 
-bool Kernel::directMethod(RanGen& ran){
+bool Kernel::directMethod(RanGen& /*ran*/){
     return true;
 }
 
@@ -43,13 +40,14 @@ bool Kernel::nextMethod(RanGen& ran){
     try{
         lsc_moved = r->apply(_pool, prev_t);
     }
-    catch (...) {
-        std::cout <<"error reaction without reactants: debug output <tau> <index> <reactantType> <reactantComp> <reactionType> <queueindex> <propensity>"<<std::endl;
+    catch (std::exception & e) {
+        std::cout <<"reactions exception: '"<<e.what()<<"'"<<std::endl;
+        std::cout<<"debug output <tau> <index> <reactantType> <reactantComp> <reactionType> <queueindex> <propensity>"<<std::endl;
         std::cout <<next->tau()<<" "<<next->index()<<" " <<r->reactant()<<" "<<r->reactantComp()<<" "
             <<r->inType()<<" "<<r->inGraph()<<" "<<r->propensity()<<std::endl;
         exit(1);
     }
-    if((_lsctime < 0.)&&lsc_moved &&_pool.getC(0)==0 ) {
+    if((_lsctime < 0.)&&lsc_moved &&_pool.getC(0)<=0 ) {
         _lsctime = prev_t;
     }
     //4. update every reaction dependend upon the reaction that was just used.
@@ -60,7 +58,7 @@ bool Kernel::nextMethod(RanGen& ran){
         next_estimate = r->calcPutativeTime(ran.randouble(), prev_t);
     }
     else { // store some information relevant for later calculations.
-        if(r->getTZero() == -1.0){
+        if(r->getTZero() <0.  ){ // if it is the first time that the reactants are not sufficient
             r->setLasta();
             r->setTZero(prev_t);
             r->setLastPtime();
@@ -82,7 +80,7 @@ bool Kernel::nextMethod(RanGen& ran){
             Reaction *rd = _allr[(*start)->reaction()];
             QueueElement *qed = _queue[(*start)->reaction()];
             if(!rd->sufficientReactants(_pool) && qed->tau() < std::numeric_limits<double>::infinity()){
-                if(rd->getTZero() == -1.0){ // if it is the first time that the reactants are not sufficient
+                if(rd->getTZero() <0.  ){ // if it is the first time that the reactants are not sufficient
                     rd->setLasta();
                     rd->setTZero(prev_t);
                     rd->setLastPtime();
@@ -102,7 +100,7 @@ bool Kernel::nextMethod(RanGen& ran){
                 }	
                 rd->setPropensity(rd->reactantFactor(_pool));
                 //queuelement should be  in the same position in the indexedqueue as in the reaction pool
-                if(rd->getTZero() < 0.0 && qed->tau() == std::numeric_limits<double>::infinity()){ 
+                if(rd->getTZero() < 0.0 && std::isinf(qed->tau())){ 
                     //rection has never been used before
                     next_estimate = rd->calcPutativeTime(ran.randouble(), prev_t);
                 }
@@ -119,7 +117,7 @@ bool Kernel::nextMethod(RanGen& ran){
     return lsc_moved;
 }
 
-void Kernel::reinitialize(Model& pool,RanGen& ran,double prev_t){
+void Kernel::reinitialize(RanGen& ran,double prev_t){
 
     for (unsigned int r_id =0 ; r_id < _allr.size(); ++r_id){
         Reaction* rd=_allr[r_id];
@@ -127,7 +125,7 @@ void Kernel::reinitialize(Model& pool,RanGen& ran,double prev_t){
         double next_estimate =std::numeric_limits<double>::infinity();
 
         if(!rd->sufficientReactants(_pool) && qed->tau() < std::numeric_limits<double>::infinity()){
-            if(rd->getTZero() == -1.0){ // if this is the first time that the reactants are not sufficient
+            if(rd->getTZero() <0.  ){ // if it is the first time that the reactants are not sufficient
                 rd->setLasta();
                 rd->setTZero(prev_t);
                 rd->setLastPtime();
@@ -141,7 +139,7 @@ void Kernel::reinitialize(Model& pool,RanGen& ran,double prev_t){
             double a_old = rd->propensity();		
             rd->setPropensity(rd->reactantFactor(_pool));
 
-            if(qed->tau() == std::numeric_limits<double>::infinity()){ 
+            if (std::isinf(qed->tau())){ 
                 if(rd->propensity() > 0.0){
                     next_estimate = rd->calcPutativeTime(ran.randouble(), prev_t);
                 }
@@ -190,7 +188,7 @@ double Kernel::execute(RanGen& ran, double t, int sim_type){
             _allr[r_id]->setRate(_pool.getTreatRate());
         }
     }
-    reinitialize(_pool,ran,_time);
+    reinitialize(ran,_time);
     //#####done switching treatment
     
     int iters =0.;// (int)ceil(_time / _data.dt());
@@ -204,7 +202,6 @@ double Kernel::execute(RanGen& ran, double t, int sim_type){
         _pool.memorize(); //every time we update the state is stored (calculations are performed on these states)
         _time += _time_step; 
         int reactions_count=0;
-        double starttime_reacts=next_stoch;
         while(_time >= next_stoch)	{
             nextMethod(ran);
             next_stoch = (_queue.top())->tau();
@@ -250,14 +247,14 @@ std::istream& Kernel::readModel(std::istream& input){
 void Kernel::reset_treatment(RanGen& ran,double t){
 
     _pool.reset_treatment();
-    reinitialize(_pool,ran,t*365.);
+    reinitialize(ran,t*365.);
 
 }
 
 
 void Kernel::introduce_immunity_inlowest(){
 
-    unsigned int k =0;
+    int k =0;
     bool cancer_cell_replaced=false;
     while (k< _data.ncompartments() &&  !cancer_cell_replaced){
         cancer_cell_replaced=_pool.manual_mutation(k);
@@ -286,14 +283,16 @@ bool Kernel::stopsim(double t,int sim_type){
         if (_doctor.reduction_reached()){
             if (_stoptimer<=0.){
                 _stoptimer=t;
-                return false;
             }
-            if (t>=_stoptimer+365.){
+            if (t >= _stoptimer+_data.required_reduction_time()){
                 _stoptimer=-1.;
                 return true;
             }
         }
-        else return false;
+        else{
+            // _stoptimer=-1.;
+            return false;
+        }
     }
     else if (sim_type==DIAGNOSISRUN){
         if (_doctor.diagnosis_reached()) return true;

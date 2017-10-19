@@ -235,7 +235,7 @@ std::ostream& MoranReaction::display(std::ostream& os){
     return os;
 }
 
-bool Reaction::apply(Model& pool, double time){
+bool Reaction::apply(Model& pool, double /*time*/){
     //Reaction format : Tp(k) -> Tp(k') + Tp(k'')
     //decrease reactants, increase products
     //	cout << "before[" << reactantComp() << ", " << reactant() << ", " << pool.get(reactantComp(), reactant()) << "]" << std::endl;
@@ -255,7 +255,7 @@ bool Reaction::apply(Model& pool, double time){
     return false;
 }
 
-bool Treatment::apply(Model& pool, double time){
+bool Treatment::apply(Model& pool, double /*time*/){
     //Reaction format : Tp(k) -> Tp(k')
     //decrease reactant, increase product
     // cout << "before[" << reactantComp() << ", " << reactant() << ", " << pool.get(reactantComp(), reactant()) 
@@ -275,7 +275,7 @@ bool Treatment::apply(Model& pool, double time){
     return false;
 }
 
-bool StemCellRenewal::apply(Model& pool, double time){
+bool StemCellRenewal::apply(Model& pool, double /*time*/){
     if(pool.get(0, reactant()) > 0){
         bool lsc_moved = false;
         pool.decr(0, reactant(),1);
@@ -286,7 +286,7 @@ bool StemCellRenewal::apply(Model& pool, double time){
         double tempH = pool.getH(0);
         double tempI = pool.getI(0);
         double tempN = pool.getN(0);
-        double elm=_ran->ranval(0,int(tempN));
+        int elm=_ran->ranval(0,int(tempN-1));
 
         if (tempC > 0 && elm < tempC) {
             pool.decr(0, C, 1);
@@ -301,6 +301,9 @@ bool StemCellRenewal::apply(Model& pool, double time){
             pool.decr(0, I, 1);
             pool.incr(1, I, 1);
         }		
+        else {
+            throw std::logic_error("no cell removed from stem cell compartment");
+        }
         this->incrUsed();
         return lsc_moved; 
     }
@@ -310,31 +313,8 @@ bool StemCellRenewal::apply(Model& pool, double time){
     return false;
 }
 
-//bool StemCellRenewal::apply(Model& pool, double time){
-//	if(pool.retrieve(0, reactant()) > 0 && reactant() == H){
-//		bool lsc_moved = false;
-//		pool.decr(0, reactant(), 1);
-//		pool.incr(0, product1(), 1);
-//		pool.incr(0, product2(), 1);
-//		
-//		if (pool.getC(0) > 0) {
-//			pool.decr(0, C, 1);
-//			pool.incr(1, C, 1);
-//			lsc_moved=true;
-//		}
-//		else {
-//			pool.decr(0, H, 1);
-//			pool.incr(1, H, 1);
-//		}
-//
-//		this->incrUsed();
-//		return lsc_moved; 
-//	}
-//	return false;
-//}
 
-
-bool MoranReaction::apply(Model& pool, double time){
+bool MoranReaction::apply(Model& pool, double /*time*/){
     //Reaction format : Tp(k) + oTp(k) -> 2Tp(k') + 2oTp(k'')
     //decrease reactants, increase products
     //	cout << "before1[" << reactantComp() << ", " << reactant() << ", " << pool.get(reactantComp(), reactant()) << "]\t";

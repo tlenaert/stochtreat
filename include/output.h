@@ -40,19 +40,13 @@ struct Print_specifiers{
     bool relapsetime=false;
     bool three_timepoint_median=false;
     bool three_timepoint_full=false;
+    bool treat_dynamics=false;
 
     /** Returns "true" if single patient data will be printed,
      * i.e. decides if a newline is printed after each patient.
      * !Update this if you add more output cases! */
     operator bool() const;
 
-};
-
-struct Run_modes{
-    int resistance=-1;
-    bool treattest=false;
-    bool fixed_time_treatment=true;
-    operator bool() const { return (resistance>=0||treattest);}
 };
 
 struct Three_timepoint_measurements{
@@ -119,6 +113,9 @@ class Stats_Output{
         double _resshare_relapse;
         std::string _yearlyburden;
         std::vector<double> _avgsize;
+        std::vector<std::vector<double>> burden_record;
+
+        double _treat_dynamics_interval;
 
         std::vector<double> _redresult;
         Three_timepoint_measurements _three_timepoints_measure;

@@ -16,16 +16,15 @@ INCLUDEDIR := include
 
 
 #COMPILATION AND LIBARY FLAGS
-# LDLIBS = -L/usr/local/Cellar/gsl/1.16/lib -lgsl -lgslcblas #-lm -lboost_serialization
-LDLIBS = -L /usr/local/lib/ -lgsl #-lm -lboost_serialization
+LDLIBS = #-L /usr/local/lib/  #-lm -lboost_serialization -lgsl
 
 # -lefence -lboost_random -lboost_thread-mt  -lboost_random  -stdlib=libc++
 
 WARNINGS := -Wall -pedantic -Wextra -Wshadow  -Wcast-qual  -Weffc++ -Wfloat-equal -Wunreachable-code   -Wdisabled-optimization 
 #--Wstrict-overflow=5 Wpointer-arith -Wunused -Wconversion -fno-diagnostics-fixit-info
 
-OPTIDEBUG := -O3
-#CFLAGS: release mode: -O2 or -O3 debug mode: -g -ggdb  profile mode: -pg 
+OPTIDEBUG := -O3 -DNDEBUG
+#CFLAGS: release mode: -O2 or -O3 -DNDEBUG debug mode: -g -ggdb  profile mode: -pg 
 
 CFLAGS := -std=c++11 $(OPTIDEBUG) $(WARNINGS) -I./$(INCLUDEDIR)/
 

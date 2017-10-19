@@ -17,20 +17,72 @@
 #include <vector>
 #include <map>
 #include <cmath>
+#include "parameter_handler.h"
 
 struct Diff_probabilities{
     double epsh=0.85;
-    double epsc=0.71;
+    double epsc=0.72;
     double epsb=0.89;
-    double epsi=0.71; //differentation probability immmune cell
+    double epsr=epsc; //differentation probability immmune cell
 
     /* write differentiation probabilities output os. */
     void write(std::ostream & os){ 
-        os <<"#diffprobs: "<<epsh<<" "<<epsc<<" "<<epsb<<" "<<epsi<<std::endl;
+        os <<"#diffprobs: "<<epsh<<" "<<epsc<<" "<<epsb<<" "<<epsr<<std::endl;
     }
 
 };
 
+struct Proliferation_parameters{
+    double kn=1/365.;
+    double kc=kn;
+    double kb=kn;
+    double kr=kn;
+
+    double gamman=1.263;//in paper 1.26// 1.263;
+    double gammac=1.263;
+    double gammab=1.263;
+    double gammar=gammac;
+    void write(std::ostream & os){ 
+        os <<"#prolifs (k,gamma): "<<kn<<" "<<kc<<" "<<kr<<" "<<kb<<" "<<gamman<<" "<<gammac<<" "<<gammar<<" "<<gammab<<" "<<std::endl;
+    }
+};
+
+struct Run_modes{
+    int resistance=-1;
+    bool treattest=false;
+    bool fixed_time_treatment=true;
+    operator bool() const { return (resistance>=0||treattest);}
+};
+
+struct Simulation_Parameters{
+    Diff_probabilities diff_probs;
+    Proliferation_parameters prolif;
+    Run_modes run_mode;
+    std::string output; //"patient nolsctime diagtime initresponse fullburden"
+    int runid = 1;
+    int n_stochastic_compartments = 7; // 1 means only the stem cell compartment
+    int n_neutral = 1; //bcr/abl neutral up to this compartment
+    int n_compartments = 32;
+    unsigned inital_lsc = 1;
+    double diagnosis_level = 12;
+    float treatmenttime  = 20;
+    float mass = 70; //human mass
+    float reduction = 4.5;
+    double relapse_logreduction = 3.;
+    double required_reduction_time = 0;
+    double treatment_rate = 0.05;
+    unsigned patients = 1;
+    double collectinterval=30.; //how often data is collected
+    double ntime=25.;// maximum simulation time in years
+    void set_parameters(ParameterHandler & inputparams);
+};
+
+/** Stores and handles all data for the model and input/ouput.
+ * Recieves and handels user input and simulation defaults.
+ * Main input:
+ * Simulation_Parameters simparams - all user editable simulation parameters
+ * Note: When adding new parameters to constructor, also add to copy constructor!!!
+ * */
 class Data {
     public:
         Data(); 
@@ -56,28 +108,55 @@ class Data {
             _numlsc = v;
             _frac_csc = v/N0();
         } 
-        double rbase() const {return _rbase;}
-        void setRbase (double v) {_rbase = v;}
         double N0() const {return _N0;}
         void setN0(double v) {_N0 = v;}
 
-        /** Returns the average cell cycle time of HSC.*/
-        double tau() const {return _tau;}
-        /** Sets the average cell cycle time of HSC.*/
-        void setTau(double v) {_tau = v;}
+        /* Returns the base proliferation rate for each cell type,
+         * which is the stem cell proliferation.*/
+        double base_proliferation(unsigned type){
+            switch(type){
+                case 0:
+                    return _prolif.kn;
+                case 1:
+                    return _prolif.kc;
+                case 2:
+                    return _prolif.kr;
+                case 3:
+                    return _prolif.kb;
+                default :
+                    return -1.0;
+            }
+        }
+
+        /* Returns the base proliferation rate for each cell type,
+         * which is the stem cell proliferation.*/
+        double prolif_exp(unsigned type){
+            switch(type){
+                case 0:
+                    return _prolif.gamman;
+                case 1:
+                    return _prolif.gammac;
+                case 2:
+                    return _prolif.gammar;
+                case 3:
+                    return _prolif.gammab;
+                default :
+                    return -1.0;
+            }
+        }
+
+        Proliferation_parameters return_prolif_params() const{ return _prolif;}
 
         double mass() const {return _mass;}
         void setMass(double v) {_mass = v;}
 
-        double rcancer() const {return _rcancer;}
-        void setRcancer(double v) {_rcancer = v;}
-
         double epsh() const {return _diffprobs.epsh;}
         double epsc() const {return _diffprobs.epsc;}
         double epsb() const {return _diffprobs.epsb;}
-        double epsi() const {return _diffprobs.epsi;}
+        double epsr() const {return _diffprobs.epsr;}
 
-        /** return self-renewal probability epsilon for type. */
+        /** return self-renewal probability epsilon for type.
+         * 0: healthy, 1: cancerous, 2: resistant, 3: bound (treated).*/
         double eps(unsigned type) const {
             switch(type){
                 case 0:
@@ -85,7 +164,7 @@ class Data {
                 case 1:
                     return _diffprobs.epsc;
                 case 2:
-                    return _diffprobs.epsi;
+                    return _diffprobs.epsr;
                 case 3:
                     return _diffprobs.epsb;
                 default :
@@ -96,7 +175,7 @@ class Data {
         void setEpsh (double v) {_diffprobs.epsh = v;} 
         void setEpsc (double v) {_diffprobs.epsc = v;} 
         void setEpsb (double v) {_diffprobs.epsb = v;} 
-        void setEpsi (double v) {_diffprobs.epsi = v;} 
+        void setEpsi (double v) {_diffprobs.epsr = v;} 
         void setEps(unsigned type, double v)  {
             switch(type){
                 case 0:
@@ -106,7 +185,7 @@ class Data {
                     _diffprobs.epsc = v;
                     break;
                 case 2:
-                    _diffprobs.epsi = v;
+                    _diffprobs.epsr = v;
                     break;
                 case 3:
                     _diffprobs.epsb = v;
@@ -129,6 +208,10 @@ class Data {
 
         /** returns the total number of compartments in the model. */
         int ncompartments() const {return _ncompartments;}
+
+        /** returns the number of bcrabl-neutral compartments. */
+        unsigned int n_neutral_compartments() const {return _n_neutral_compartments;}
+
         /** Sets the total number of compartments in the model. */
         void setNCompartments(int v) {_ncompartments = v;}
 
@@ -143,6 +226,11 @@ class Data {
         /** Returns the recuction level that is required to stop treatment.*/
         double reduction() const {return _reduction;}
         void set_treatment_stop_reduction(double v) {_reduction = v;}
+
+        /** Returns required time in days for reduction to be 
+         * maintained before treatment is stopped.*/
+        double required_reduction_time() const {return _required_redtime;}
+        void set_required_reduction_time(double v) {_required_redtime=v;}
 
         void set_relapse_reduction(double v) {_relapse_reduction=v;}
         double relapse_reduction() {return _relapse_reduction;}
@@ -161,14 +249,8 @@ class Data {
         void setThreshold(double v) {_threshold = v;}
 
 
-        int step() const {return _step;}
-        void setStep(int v) { _step = v;}
-        std::string ofcompartment() const {return _ofcompartment;}
-        void setOfcompartment (std::string name) {_ofcompartment = name;}
-        std::string offinal() const {return _offinal;}
-        void setOffinal (std::string name) { _offinal = name;}
-        void setOfname(std::string name) {_ofname=name;}
-        std::string ofname() const {return _ofname;}
+        int step() const {return _outputstep;}
+        void setStep(int v) { _outputstep = v;}
 
         /** returns treatment time in years.*/
         double treatment_dur() const {return _treatment_duration;}
@@ -183,17 +265,25 @@ class Data {
          * in the treatment phase of the simulation. */
         void set_maximum_treatment_duration(double t) {_treatment_duration=t;}
 
-        std::string storage() const {return _hdlocation;}
-        void setStorage(std::string s) {_hdlocation=s;}
-
         /** Calculates patient parameters from given input.
          * parameters:
          * mass     - mass of the modeled animal
+         * Nbase    - log base for the number of hematopeotic stem cells
          * Bbase    - log base for the average cell cycle time of hematopeotic stem cells
          * Sbase    - log base for the deterministic timestep of simulation
          * Lbase    - log base for maximum simulation time
+         * c_interv - interval for virtual doctor visits (data collection interval)
          * diffprobs- differentiation probabilies. */
         void initialize(double,double,double, double, double, double,Diff_probabilities);
+
+        /** Calculates patient parameters from given input.
+         * parameters:
+         * simparams- simulation parameters (from default and user input).
+         * Nbase    - log base for the number of hematopeotic stem cells
+         * Bbase    - log base for the average cell cycle time of hematopeotic stem cells
+         * Sbase    - log base for the deterministic timestep of simulation
+         * Lbase    - log base for maximum simulation time */
+        void initialize(const Simulation_Parameters & ,double, double,double);
 
         friend std::ostream & operator<<(std::ostream &o, Data& c){return c.display(o);}
 
@@ -202,32 +292,28 @@ class Data {
         std::istream& read_from_file(std::istream&);
 
         double _dt; //time step relative to days
-        Diff_probabilities _diffprobs;
+        Diff_probabilities _diffprobs;//differentiation probabilities of all cell types
+        Proliferation_parameters _prolif; //proliferation parameters of all cell types
         double _p_csc; //probability that a normal cell turns into a cancer cell
         double _p_imm; //probabilty that a cancer cell turns into an immune cell
         double _frac_csc; //fraction of cancer cells in the stem cell compartment
         double _numlsc; //number of LSC
         double _treatment_rate; //percentage of cells bound to imatinib per day
-        double _rbase; //basal metabolic rate
         double _tmax; // maximum simulation time in years
         int _ncompartments;  //number of compartmens in the hematopoeitic system
+        int _n_neutral_compartments; //number of compartments where bcr/abl is neutral
         double _N0; //Numbe of cells in the stem cell compartment
-        double _tau; //maturation time reticulocytes
         int _numstochcomps; //index of first deterministic compartment
         double _additional; //additional number of years to continue simulation after X
         double _treatment_duration; //number of years of treatment
         double _diagnosis_level; //stop value = diagnosis level
-        double _reduction; //stop value (CHANGE now it is the required log reduction in bcr-abl transcript level)
+        double _reduction; //stop value (required log reduction in bcr-abl transcript level)
+        double _required_redtime; //time stop value to be maintained
         double _relapse_reduction; //stop value relapse
         double _mass;  //mammal mass
-        double _rcancer; //difference between replication rates of normal and cancer cells.
         double _threshold; //percentage increase in number of cells for diagnosis
 
-        int _step; 
-        std::string _hdlocation; 
-        std::string _ofcompartment;
-        std::string _offinal;
-        std::string _ofname;
+        int _outputstep;//steps after which output is saved. unused
 };
 
 #endif
